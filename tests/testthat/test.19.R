@@ -7,7 +7,6 @@
 ## Note the type of test.
 context("TIFF files")
 
-## Note the data directory.
 ## Note the data path.
 path <- system.file("extdata", "image.tiff", package = "SchemaOnRead")
 

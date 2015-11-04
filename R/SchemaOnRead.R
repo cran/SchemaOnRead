@@ -8,58 +8,58 @@
 ## Define the directory processor.
 ##
 schemaOnReadProcessDirectory <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                         processors = schemaOnReadDefaultProcessors(),
+                                         verbose = FALSE) {
 
-        ## Define the results holder.
-        results <- list()
+  ## Define the results holder.
+  results <- list()
 
-        ## Check the entry.
-        if ((file.exists(path)) && (file.info(path)$isdir)) {
+  ## Check the entry.
+  if ((file.exists(path)) && (file.info(path)$isdir)) {
 
-                ## Find the entries in the the given source path.
-                listing <- dir(path = path,
-                        all.files = FALSE,
-                        full.names = FALSE,
-                        recursive = FALSE,
-                        ignore.case = FALSE,
-                        include.dirs = TRUE,
-                        no.. = TRUE)
+    ## Find the entries in the the given source path.
+    listing <- dir(path = path,
+                   all.files = FALSE,
+                   full.names = FALSE,
+                   recursive = FALSE,
+                   ignore.case = FALSE,
+                   include.dirs = TRUE,
+                   no.. = TRUE)
 
-                ## Process the entries.
-                for (entry in listing) {
+    ## Process the entries.
+    for (entry in listing) {
 
-                        ## Find the full path to the entry.
-                        file <- paste(path, .Platform$file.sep, entry, sep = "")
+      ## Find the full path to the entry.
+      file <- paste(path, .Platform$file.sep, entry, sep = "")
 
-                        ## Define the variable name.
-                        variable <- gsub("[^[:alnum:].]", "_", entry)
-                        while (eval(parse(
-                                text = paste("exists(\"results$", variable, "\")",
-                                sep = "")))) {
-                                variable <- paste(variable, "_A", sep = "")
-                        }
+      ## Define the variable name.
+      variable <-formatVariableName(entry)
+      while (eval(parse(
+        text = paste("exists(\"results$", variable, "\")",
+                     sep = "")))) {
+        variable <- paste(variable, "_A", sep = "")
+      }
 
-                        ## Setup the processing command.
-                        command <- paste("results$", variable,
-                                " <- schemaOnRead",
-                                "(file, processors, verbose)", sep = "")
+      ## Setup the processing command.
+      command <- paste("results$", variable,
+                       " <- schemaOnRead",
+                       "(file, processors, verbose)", sep = "")
 
 
-                        ## Evaluate the processing command.
-                        eval(parse(text = command))
+      ## Evaluate the processing command.
+      eval(parse(text = command))
 
-                }
+    }
 
-                ## Return the results.
-                return(results)
+    ## Return the results.
+    return(results)
 
-        } else {
+  } else {
 
-                ## Note that this is not match.
-                return(NULL)
+    ## Note that this is not match.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -67,35 +67,35 @@ schemaOnReadProcessDirectory <- function(path = ".",
 ## Define the bitmap (BMP, PNG, and JPG) file processor.
 ##
 schemaOnReadProcessBitmapsFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                           processors = schemaOnReadDefaultProcessors(),
+                                           verbose = FALSE) {
 
-        ## Check the given path.
-        if (file.exists(path)) {
+  ## Check the given path.
+  if (file.exists(path)) {
 
-                ## Check the given file.
-                type_code <- readbitmap::image_type(path)
-                if ((!is.na(type_code)) &&
-                        ((type_code == "bmp") ||
-                         (type_code == "jpg") ||
-                         (type_code == "png"))) {
+    ## Check the given file.
+    type_code <- readbitmap::image_type(path)
+    if ((!is.na(type_code)) &&
+        ((type_code == "bmp") ||
+         (type_code == "jpg") ||
+         (type_code == "png"))) {
 
-                        ## Attempt to read the file.
-                        return(readbitmap::read.bitmap(path))
+      ## Attempt to read the file.
+      return(readbitmap::read.bitmap(path))
 
-                } else {
+    } else {
 
-                        ## Return the default value.
-                        return(NULL)
+      ## Return the default value.
+      return(NULL)
 
-                }
+    }
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -103,22 +103,22 @@ schemaOnReadProcessBitmapsFile <- function(path = ".",
 ## Define the OpenDocument spreadsheet file processor.
 ##
 schemaOnReadProcessODSFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                       processors = schemaOnReadDefaultProcessors(),
+                                       verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                (tolower(tools::file_ext(path)) == "ods")) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      (tolower(tools::file_ext(path)) == "ods")) {
 
-                ## Attempt to read the file.
-                return(readODS::read.ods(file = path))
+    ## Attempt to read the file.
+    return(readODS::read.ods(file = path))
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -126,30 +126,30 @@ schemaOnReadProcessODSFile <- function(path = ".",
 ## Define the DIF file processor.
 ##
 schemaOnReadProcessDIFFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                       processors = schemaOnReadDefaultProcessors(),
+                                       verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                (tolower(tools::file_ext(path)) == "dif")) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      (tolower(tools::file_ext(path)) == "dif")) {
 
-                ## Attempt to read the file.
-                try (
-                        return(utils::read.DIF(path)),
-                        silent = TRUE
-                )
+    ## Attempt to read the file.
+    try (
+      return(utils::read.DIF(path)),
+      silent = TRUE
+    )
 
-                ## Attempt to read the file again.
-                try (
-                        return(utils::read.DIF(path, transpose = TRUE))
-                )
+    ## Attempt to read the file again.
+    try (
+      return(utils::read.DIF(path, transpose = TRUE))
+    )
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -157,24 +157,24 @@ schemaOnReadProcessDIFFile <- function(path = ".",
 ## Define the EPIINFO file processor.
 ##
 schemaOnReadProcessEPIINFOFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                           processors = schemaOnReadDefaultProcessors(),
+                                           verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                (tolower(tools::file_ext(path)) == "rec")) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      (tolower(tools::file_ext(path)) == "rec")) {
 
-                ## Attempt to read the file.
-                return(suppressWarnings(
-                        foreign::read.epiinfo(path)
-                        ))
+    ## Attempt to read the file.
+    return(suppressWarnings(
+      foreign::read.epiinfo(path)
+    ))
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -182,22 +182,22 @@ schemaOnReadProcessEPIINFOFile <- function(path = ".",
 ## Define the CSV file processor.
 ##
 schemaOnReadProcessCSVFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                       processors = schemaOnReadDefaultProcessors(),
+                                       verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                (tolower(tools::file_ext(path)) == "csv")) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      (tolower(tools::file_ext(path)) == "csv")) {
 
-                ## Attempt to read the file.
-                return(utils::read.csv(path, header = TRUE))
+    ## Attempt to read the file.
+    return(utils::read.csv(path, header = TRUE))
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -205,22 +205,22 @@ schemaOnReadProcessCSVFile <- function(path = ".",
 ## Define the GIF file processor.
 ##
 schemaOnReadProcessGIFFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                       processors = schemaOnReadDefaultProcessors(),
+                                       verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                (tolower(tools::file_ext(path)) == "gif")) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      (tolower(tools::file_ext(path)) == "gif")) {
 
-                ## Attempt to read the file.
-                return(caTools::read.gif(path))
+    ## Attempt to read the file.
+    return(caTools::read.gif(path))
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -228,23 +228,23 @@ schemaOnReadProcessGIFFile <- function(path = ".",
 ## Define the TIFF file processor.
 ##
 schemaOnReadProcessTIFFFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                        processors = schemaOnReadDefaultProcessors(),
+                                        verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                ((tolower(tools::file_ext(path)) == "tif") ||
-                 (tolower(tools::file_ext(path)) == "tiff"))) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      ((tolower(tools::file_ext(path)) == "tif") ||
+       (tolower(tools::file_ext(path)) == "tiff"))) {
 
-                ## Attempt to read the file.
-                return(tiff::readTIFF(path))
+    ## Attempt to read the file.
+    return(tiff::readTIFF(path))
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -252,23 +252,23 @@ schemaOnReadProcessTIFFFile <- function(path = ".",
 ## Define the ARFF file processor.
 ##
 schemaOnReadProcessARFFFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                        processors = schemaOnReadDefaultProcessors(),
+                                        verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                ((tolower(tools::file_ext(path)) == "arf") ||
-                 (tolower(tools::file_ext(path)) == "arff"))) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      ((tolower(tools::file_ext(path)) == "arf") ||
+       (tolower(tools::file_ext(path)) == "arff"))) {
 
-                ## Attempt to read the file.
-                return(foreign::read.arff(path))
+    ## Attempt to read the file.
+    return(foreign::read.arff(path))
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -276,22 +276,22 @@ schemaOnReadProcessARFFFile <- function(path = ".",
 ## Define the DBF file processor.
 ##
 schemaOnReadProcessDBFFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                       processors = schemaOnReadDefaultProcessors(),
+                                       verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                (tolower(tools::file_ext(path)) == "dbf")) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      (tolower(tools::file_ext(path)) == "dbf")) {
 
-                ## Attempt to read the file.
-                return(foreign::read.dbf(path))
+    ## Attempt to read the file.
+    return(foreign::read.dbf(path))
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -299,23 +299,23 @@ schemaOnReadProcessDBFFile <- function(path = ".",
 ## Define the HTML file processor.
 ##
 schemaOnReadProcessHTMLFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                        processors = schemaOnReadDefaultProcessors(),
+                                        verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                ((tolower(tools::file_ext(path)) == "htm") ||
-                 (tolower(tools::file_ext(path)) == "html"))) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      ((tolower(tools::file_ext(path)) == "htm") ||
+       (tolower(tools::file_ext(path)) == "html"))) {
 
-                ## Attempt to read the file.
-                return(XML::htmlTreeParse(path))
+    ## Attempt to read the file.
+    return(XML::htmlTreeParse(path))
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -323,22 +323,22 @@ schemaOnReadProcessHTMLFile <- function(path = ".",
 ## Define the SPSS file processor.
 ##
 schemaOnReadProcessSPSSFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                        processors = schemaOnReadDefaultProcessors(),
+                                        verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                (tolower(tools::file_ext(path)) == "sav")) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      (tolower(tools::file_ext(path)) == "sav")) {
 
-                ## Attempt to read the file.
-                return(foreign::read.spss(path))
+    ## Attempt to read the file.
+    return(foreign::read.spss(path))
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -346,22 +346,22 @@ schemaOnReadProcessSPSSFile <- function(path = ".",
 ## Define the SYS file processor.
 ##
 schemaOnReadProcessSYSFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                       processors = schemaOnReadDefaultProcessors(),
+                                       verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                (tolower(tools::file_ext(path)) == "sys")) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      (tolower(tools::file_ext(path)) == "sys")) {
 
-                ## Attempt to read the file.
-                return(foreign::read.systat(path))
+    ## Attempt to read the file.
+    return(foreign::read.systat(path))
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -369,22 +369,22 @@ schemaOnReadProcessSYSFile <- function(path = ".",
 ## Define the Stata 13 file processor.
 ##
 schemaOnReadProcessStata13File <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                           processors = schemaOnReadDefaultProcessors(),
+                                           verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                (tolower(tools::file_ext(path)) == "dta")) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      (tolower(tools::file_ext(path)) == "dta")) {
 
-                ## Attempt to read the file.
-                return(readstata13::read.dta13(path))
+    ## Attempt to read the file.
+    return(readstata13::read.dta13(path))
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -392,23 +392,23 @@ schemaOnReadProcessStata13File <- function(path = ".",
 ## Define the Pajek file processor.
 ##
 schemaOnReadProcessPajekFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                         processors = schemaOnReadDefaultProcessors(),
+                                         verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                ((tolower(tools::file_ext(path)) == "net") ||
-                 (tolower(tools::file_ext(path)) == "paj"))) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      ((tolower(tools::file_ext(path)) == "net") ||
+       (tolower(tools::file_ext(path)) == "paj"))) {
 
-                ## Attempt to read the file.
-                return(network::read.paj(path))
+    ## Attempt to read the file.
+    return(network::read.paj(path))
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -416,22 +416,22 @@ schemaOnReadProcessPajekFile <- function(path = ".",
 ## Define the text file processor.
 ##
 schemaOnReadProcessTextFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                        processors = schemaOnReadDefaultProcessors(),
+                                        verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                (tolower(tools::file_ext(path)) == "txt")) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      (tolower(tools::file_ext(path)) == "txt")) {
 
-                ## Attempt to read the file.
-                return(read.csv(path, header = FALSE))
+    ## Attempt to read the file.
+    return(read.csv(path, header = FALSE))
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -439,22 +439,22 @@ schemaOnReadProcessTextFile <- function(path = ".",
 ## Define the RDS file processor.
 ##
 schemaOnReadProcessRDSFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                       processors = schemaOnReadDefaultProcessors(),
+                                       verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                (tolower(tools::file_ext(path)) == "rds")) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      (tolower(tools::file_ext(path)) == "rds")) {
 
-                ## Attempt to read the file.
-                return(base::readRDS(path))
+    ## Attempt to read the file.
+    return(base::readRDS(path))
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -462,22 +462,22 @@ schemaOnReadProcessRDSFile <- function(path = ".",
 ## Define the XML file processor.
 ##
 schemaOnReadProcessXMLFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                       processors = schemaOnReadDefaultProcessors(),
+                                       verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                (tolower(tools::file_ext(path)) == "xml")) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      (tolower(tools::file_ext(path)) == "xml")) {
 
-                ## Attempt to read the file.
-                return(XML::xmlToList(XML::xmlParse(path), simplify = TRUE))
+    ## Attempt to read the file.
+    return(XML::xmlToList(XML::xmlParse(path), simplify = TRUE))
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -485,50 +485,50 @@ schemaOnReadProcessXMLFile <- function(path = ".",
 ## Define the XLS and XLSX spreadsheet file processor.
 ##
 schemaOnReadProcessXLSandXLSXFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                              processors = schemaOnReadDefaultProcessors(),
+                                              verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                ((tolower(tools::file_ext(path)) == "xls") ||
-                 (tolower(tools::file_ext(path)) == "xlsx"))) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      ((tolower(tools::file_ext(path)) == "xls") ||
+       (tolower(tools::file_ext(path)) == "xlsx"))) {
 
-                ## Create the results holder.
-                results <- list()
+    ## Create the results holder.
+    results <- list()
 
-                ## Attempt to read the file.
-                workbook <- XLConnect::loadWorkbook(path)
+    ## Attempt to read the file.
+    workbook <- XLConnect::loadWorkbook(path)
 
-                ## Scan the worksheets.
-                for (worksheet in XLConnect::getSheets(workbook)) {
+    ## Scan the worksheets.
+    for (worksheet in XLConnect::getSheets(workbook)) {
 
-                        ## Define the variable name.
-                        variable <- gsub("[^[:alnum:].]", "_", worksheet)
-                        while (eval(parse(
-                                text = paste("exists(\"results$", variable, "\")",
-                                sep = "")))) {
-                                variable <- paste(variable, "_A", sep = "")
-                        }
+      ## Define the variable name.
+      variable <- formatVariableName(worksheet)
+      while (eval(parse(
+        text = paste("exists(\"results$", variable, "\")",
+                     sep = "")))) {
+        variable <- paste(variable, "_A", sep = "")
+      }
 
-                        ## Setup the processing command.
-                        command <- paste("results$", variable,
-                                " <- XLConnect::readWorksheet",
-                                "(workbook, sheet = worksheet)", sep = "")
+      ## Setup the processing command.
+      command <- paste("results$", variable,
+                       " <- XLConnect::readWorksheet",
+                       "(workbook, sheet = worksheet)", sep = "")
 
-                        ## Evaluate the processing command.
-                        eval(parse(text = command))
+      ## Evaluate the processing command.
+      eval(parse(text = command))
 
-                }
+    }
 
-                ## Return the results.
-                return(results)
+    ## Return the results.
+    return(results)
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -536,46 +536,46 @@ schemaOnReadProcessXLSandXLSXFile <- function(path = ".",
 ## Define the NetCDF and HDF5 file processor.
 ##
 schemaOnReadProcessNetCDandH5FFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                               processors = schemaOnReadDefaultProcessors(),
+                                               verbose = FALSE) {
 
-        ## Check the given path.
-        if ((file.exists(path)) &&
-                ((tolower(tools::file_ext(path)) == "nc") ||
-                 (tolower(tools::file_ext(path)) == "h5"))) {
+  ## Check the given path.
+  if ((file.exists(path)) &&
+      ((tolower(tools::file_ext(path)) == "nc") ||
+       (tolower(tools::file_ext(path)) == "h5"))) {
 
-                ## Create the results holder.
-                results <- list()
+    ## Create the results holder.
+    results <- list()
 
-                ## Attempt to read the file.
-                dimensions <- ncdf.tools::infoNcdfVars(path)
+    ## Attempt to open the file.
+    header <- ncdf::open.ncdf(path)
 
-                ## Scan the dimensions
-                for (name in dimensions$name) {
+    ## Scan the dimensions
+    for (index in 1:header$nvars) {
 
-                        ## Define the variable name.
-                        variable <- gsub("[^[:alnum:]]", "_", name)
+      ## Define the variable name.
+      variable <- formatVariableName(header$var[[index]])
 
-                        ## Setup the processing command.
-                        command <- paste("try (results$", variable,
-                                " <- ncdf.tools::readNcdf",
-                                "(path, var.name = name), silent = TRUE)",
-                                sep = "")
+      ## Setup the processing command.
+      command <- paste("try (results$", variable,
+                       " <- ncdf::get.var.ncdf(",
+                       "header, header$var[[index]]), silent = TRUE)",
+                       sep = "")
 
-                        ## Attempt to evaluate the processing command.
-                        eval(parse(text = command))
+      ## Attempt to evaluate the processing command.
+      eval(parse(text = command))
 
-                }
+    }
 
-                ## Return the results.
-                return(results)
+    ## Return the results.
+    return(results)
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -583,21 +583,21 @@ schemaOnReadProcessNetCDandH5FFile <- function(path = ".",
 ## Define the default file processor.
 ##
 schemaOnReadProcessDefaultFile <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                           processors = schemaOnReadDefaultProcessors(),
+                                           verbose = FALSE) {
 
-        ## Check the given path.
-        if (file.exists(path)) {
+  ## Check the given path.
+  if (file.exists(path)) {
 
-                ## Note that that file is not recognized.
-                return(paste(path, "File Type Unknown"))
+    ## Note that that file is not recognized.
+    return(paste(path, "File Type Unknown"))
 
-        } else {
+  } else {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        }
+  }
 
 }
 
@@ -605,21 +605,42 @@ schemaOnReadProcessDefaultFile <- function(path = ".",
 ## Define the file existance processor.
 ##
 schemaOnReadProcessEntryDoesNotExist <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                                                 processors = schemaOnReadDefaultProcessors(),
+                                                 verbose = FALSE) {
 
-        ## Check the given path.
-        if (file.exists(path)) {
+  ## Check the given path.
+  if (file.exists(path)) {
 
-                ## Return the default value.
-                return(NULL)
+    ## Return the default value.
+    return(NULL)
 
-        } else {
+  } else {
 
-                ## Note that the file does not exist.
-                return("Entry Does Not Exist")
+    ## Note that the file does not exist.
+    return("Entry Does Not Exist")
 
-        }
+  }
+
+}
+
+##
+## Define the variable name formatter.
+##
+formatVariableName <- function(entry) {
+
+  # Define the results holder.
+  results <- gsub("[^[:alnum:].]", "_", entry)
+
+  # Check the results.
+  if (nchar(results) >= 1) {
+    if ((substr(results, 1, 1) == "_") ||
+        (grepl("^(0|1|2|3|4|5|6|7|8|9)", results))) {
+      results <- paste("A", results, sep = "")
+    }
+  }
+
+  # Return the results.
+  return(results)
 
 }
 
@@ -628,15 +649,15 @@ schemaOnReadProcessEntryDoesNotExist <- function(path = ".",
 ##
 schemaOnReadSimpleProcessors <- function() {
 
-        ## Define the default processors list.
-        defaultProcessors <- list(
-                schemaOnReadProcessEntryDoesNotExist,
-                schemaOnReadProcessDirectory,
-                schemaOnReadProcessDefaultFile
-        )
+  ## Define the default processors list.
+  defaultProcessors <- list(
+    schemaOnReadProcessEntryDoesNotExist,
+    schemaOnReadProcessDirectory,
+    schemaOnReadProcessDefaultFile
+  )
 
-        ## Return the results.
-        return(defaultProcessors)
+  ## Return the results.
+  return(defaultProcessors)
 
 }
 
@@ -645,32 +666,32 @@ schemaOnReadSimpleProcessors <- function() {
 ##
 schemaOnReadDefaultProcessors <- function() {
 
-        ## Define the default processors list.
-        defaultProcessors <- list(
-                schemaOnReadProcessEntryDoesNotExist,
-                schemaOnReadProcessDirectory,
-                schemaOnReadProcessCSVFile,
-                schemaOnReadProcessTextFile,
-                schemaOnReadProcessRDSFile,
-                schemaOnReadProcessXMLFile,
-                schemaOnReadProcessXLSandXLSXFile,
-                schemaOnReadProcessDIFFile,
-                schemaOnReadProcessODSFile,
-                schemaOnReadProcessStata13File,
-                schemaOnReadProcessBitmapsFile,
-                schemaOnReadProcessGIFFile,
-                schemaOnReadProcessTIFFFile,
-                schemaOnReadProcessNetCDandH5FFile,
-                schemaOnReadProcessPajekFile,
-                schemaOnReadProcessHTMLFile,
-                schemaOnReadProcessARFFFile,
-                schemaOnReadProcessEPIINFOFile,
-                schemaOnReadProcessSPSSFile,
-                schemaOnReadProcessDefaultFile
-        )
+  ## Define the default processors list.
+  defaultProcessors <- list(
+    schemaOnReadProcessEntryDoesNotExist,
+    schemaOnReadProcessDirectory,
+    schemaOnReadProcessCSVFile,
+    schemaOnReadProcessTextFile,
+    schemaOnReadProcessRDSFile,
+    schemaOnReadProcessXMLFile,
+    schemaOnReadProcessXLSandXLSXFile,
+    schemaOnReadProcessDIFFile,
+    schemaOnReadProcessODSFile,
+    schemaOnReadProcessStata13File,
+    schemaOnReadProcessBitmapsFile,
+    schemaOnReadProcessGIFFile,
+    schemaOnReadProcessTIFFFile,
+    schemaOnReadProcessNetCDandH5FFile,
+    schemaOnReadProcessPajekFile,
+    schemaOnReadProcessHTMLFile,
+    schemaOnReadProcessARFFFile,
+    schemaOnReadProcessEPIINFOFile,
+    schemaOnReadProcessSPSSFile,
+    schemaOnReadProcessDefaultFile
+  )
 
-        ## Return the results.
-        return(defaultProcessors)
+  ## Return the results.
+  return(defaultProcessors)
 
 }
 
@@ -678,43 +699,43 @@ schemaOnReadDefaultProcessors <- function() {
 ## Define the schema reader.
 ##
 schemaOnRead <- function(path = ".",
-        processors = schemaOnReadDefaultProcessors(),
-        verbose = FALSE) {
+                         processors = schemaOnReadDefaultProcessors(),
+                         verbose = FALSE) {
 
-        ## Note the status, if requested.
-        if (verbose) {
-                print(paste("schemaOnRead processing ", path, sep = ""))
-                warnings()
-        }
+  ## Note the status, if requested.
+  if (verbose) {
+    print(paste("schemaOnRead processing ", path, sep = ""))
+    warnings()
+  }
 
-        ## Try the assigned processors.
-        for (processor in processors) {
+  ## Try the assigned processors.
+  for (processor in processors) {
 
-                ## Try the next processor.
-                if (verbose) {
-                        results <- processor(path, processors, verbose)
-                } else {
-                        suppressWarnings(
-                                results <- processor(path, processors, verbose)
-                        )
-                }
+    ## Try the next processor.
+    if (verbose) {
+      results <- processor(path, processors, verbose)
+    } else {
+      suppressWarnings(
+        results <- processor(path, processors, verbose)
+      )
+    }
 
-                ## Check the results.
-                if (!is.null(results)) {
+    ## Check the results.
+    if (!is.null(results)) {
 
-                        ## Note the status, if requested.
-                        if (verbose) {
-                                warnings()
-                        }
+      ## Note the status, if requested.
+      if (verbose) {
+        warnings()
+      }
 
-                        ## Return the results.
-                        return(results)
+      ## Return the results.
+      return(results)
 
-                }
+    }
 
-        }
+  }
 
-        ## Return the default value.
-        return("File Type Unknown")
+  ## Return the default value.
+  return("File Type Unknown")
 
 }

@@ -7,7 +7,6 @@
 ## Note the type of test.
 context("NET files")
 
-## Note the data directory.
 ## Note the data path.
 path <- system.file("extdata", paste("dir2", .Platform$file.sep,
         "Example.net", sep = ""), package = "SchemaOnRead")

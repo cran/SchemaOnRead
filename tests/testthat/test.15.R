@@ -7,7 +7,6 @@
 ## Note the type of test.
 context("PAJ files")
 
-## Note the data directory.
 ## Note the data path.
 path <- system.file("extdata", paste("dir2", .Platform$file.sep,
         "Example.paj", sep = ""), package = "SchemaOnRead")

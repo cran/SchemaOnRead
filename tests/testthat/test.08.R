@@ -11,7 +11,6 @@ context("CSV files")
 path <- system.file("extdata", paste("dir1", .Platform$file.sep,
         "Data.csv", sep = ""), package = "SchemaOnRead")
 
-
 ## Perform a test.
 testthat::expect_that(
         length(SchemaOnRead::schemaOnRead(path)),
